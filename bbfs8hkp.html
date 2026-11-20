@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MESIN PENCARI BBFS 8D - HK POOLS LOCKED</title>
+    <style>
+        :root { --neon: #00ffcc; --bg: #0a0a0b; --card: #16161a; }
+        body { background: var(--bg); color: #e0e0e0; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; }
+        .wrapper { max-width: 1100px; margin: auto; background: var(--card); border: 1px solid #333; border-radius: 15px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h2 { text-align: center; color: var(--neon); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px; }
+        p.sub { text-align: center; font-size: 11px; color: #888; margin-bottom: 15px; }
+        
+        .controls { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .locked-badge { 
+            background: linear-gradient(45deg, #ffa500, #ff6b6b); 
+            color: #000; 
+            padding: 6px 14px; 
+            border-radius: 5px; 
+            font-weight: bold; 
+            font-size: 12px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 10px rgba(255, 165, 0, 0.4);
+        }
+
+        .data-area {
+            background: #1a1a1f;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #444;
+        }
+        .data-area h4 { color: var(--neon); margin: 0 0 8px 0; font-size: 14px; }
+        .data-area textarea {
+            width: 100%;
+            height: 120px;
+            background: #0a0a0b;
+            border: 1px solid #555;
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        .data-area textarea:focus { border-color: var(--neon); outline: none; }
+        .data-area .btn-load {
+            background: linear-gradient(45deg, #ffa502, #ff6b6b);
+            border: none;
+            color: #000;
+            padding: 8px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .data-area .btn-load:hover { opacity: 0.9; }
+        .data-area .info { font-size: 11px; color: #888; margin-top: 5px; }
+
+        .scan-buttons { display: flex; gap: 10px; justify-content: center; margin: 15px 0; flex-wrap: wrap; }
+        .btn-scan { 
+            background: linear-gradient(45deg, #ff6b6b, #feca57); 
+            color: #000; 
+            border: none; 
+            border-radius: 8px; 
+            padding: 12px 24px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            text-transform: uppercase; 
+            font-size: 13px; 
+            letter-spacing: 1px; 
+        }
+        .btn-scan:hover { transform: scale(1.02); opacity: 0.9; }
+        .btn-scan:active { transform: scale(0.97); }
+
+        #scanResults { 
+            background: #1a1a1f; 
+            border-radius: 10px; 
+            padding: 15px; 
+            margin: 15px 0; 
+            border: 1px solid #444;
+            display: none;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        #scanResults h3 { color: var(--neon); margin-top: 0; text-align: center; }
+        .ranking-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 10px 12px; 
+            border-bottom: 1px solid #2a2a2f; 
+            font-size: 13px; 
+            flex-wrap: wrap; 
+            gap: 8px; 
+        }
+        .ranking-item .rank { color: #ffa500; font-weight: bold; margin-right: 10px; min-width: 30px; }
+        .ranking-item .formula { color: #fff; flex: 1; min-width: 150px; }
+        .ranking-item .jp-count { color: var(--neon); font-weight: bold; min-width: 120px; text-align: right; }
+        .best { background: #2a2a3f; border-radius: 5px; }
+        .close-scan { 
+            float: right; 
+            background: #555; 
+            border: none; 
+            color: #fff; 
+            border-radius: 50%; 
+            width: 28px; 
+            height: 28px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            line-height: 28px; 
+            text-align: center; 
+        }
+
+        .rule-box {
+            background: rgba(0, 255, 204, 0.05);
+            border: 1px solid var(--neon);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 15px 0;
+            font-size: 12px;
+            color: #ccc;
+            text-align: center;
+            line-height: 1.6;
+        }
+        .rule-box strong { color: var(--neon); }
+
+        .table-container { overflow-x: auto; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; min-width: 950px; }
+        th { font-size: 11px; color: var(--neon); padding: 10px 4px; border-bottom: 2px solid #333; text-transform: uppercase; }
+        td { padding: 8px 4px; border-bottom: 1px solid #222; text-align: center; }
+        
+        input { background: #000; border: 1px solid #444; color: #fff; padding: 6px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 13px; }
+        input:focus { border-color: var(--neon); outline: none; }
+        
+        input.hasil-input { color: #fff; border-color: #00ffcc; width: 60px; letter-spacing: 2px; }
+        input.bbfs-input { color: #ffa500; border-color: #ffa500; width: 90px; letter-spacing: 2px; }
+        input.nama-input { width: 100px; font-size: 11px; text-align: left; padding-left: 8px; }
+        input.pasaran-input { 
+            width: 100px; font-size: 11px; text-align: center; padding-left: 0;
+            background: #1a1a1f; color: #ffa500; border-color: #ffa500; cursor: not-allowed; font-weight: bold;
+        }
+        input.ke-input { width: 40px; color: #00ffcc; border-color: #333; background: #111; }
+        input.rumus-select { 
+            background: #000; 
+            border: 1px solid #444; 
+            color: #ffa500; 
+            padding: 4px 2px; 
+            border-radius: 5px; 
+            font-size: 9px; 
+            width: 120px; 
+            text-align: center; 
+            cursor: pointer; 
+        }
+
+        .btn-container { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+        .btn-eval, .btn-copy, .btn-clear { flex: 1; min-width: 150px; padding: 15px; border: none; border-radius: 8px; color: #000; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; font-size: 14px; letter-spacing: 1px; }
+        .btn-eval { background: linear-gradient(45deg, #00ffcc, #0088ff); }
+        .btn-copy { background: linear-gradient(45deg, #ff6b6b, #ffa502); color: #fff; }
+        .btn-clear { background: linear-gradient(45deg, #636e72, #b2bec3); color: #fff; }
+        .btn-eval:active, .btn-copy:active, .btn-clear:active { transform: scale(0.98); opacity: 0.9; }
+        
+        .status-jp { color: #00ff00; font-weight: bold; text-shadow: 0 0 5px #00ff00; font-size: 14px; letter-spacing: 1px; }
+        .status-zonk { color: #ff3333; font-weight: bold; opacity: 0.8; font-size: 14px; letter-spacing: 1px; }
+        .stat-pending { color: #888; font-size: 12px; }
+        
+        .toast { 
+            position: fixed; 
+            bottom: 20px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: var(--neon); 
+            color: #000; 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            opacity: 0; 
+            transition: opacity 0.3s; 
+            z-index: 1000; 
+            pointer-events: none; 
+        }
+        .toast.show { opacity: 1; }
+
+        .btn-apply { 
+            background: linear-gradient(45deg, #00ffcc, #0088ff); 
+            color: #000; 
+            border: none; 
+            border-radius: 4px; 
+            padding: 6px 12px; 
+            font-size: 10px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            margin-left: 8px;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .btn-apply:hover { opacity: 0.8; transform: scale(1.05); }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <h2>MESIN PENCARI BBFS 8D</h2>
+    <p class="sub">EVALUATOR OTOMATIS KEPALA & EKOR (N → N+1) + SCANNER RUMUS</p>
+    
+    <div class="controls">
+        <label>PASARAN:</label>
+        <span class="locked-badge">🔒 HK POOLS</span>
+    </div>
+
+    <div class="rule-box">
+        <strong>ATURAN EVALUASI (N → N+1):</strong><br>
+        Status Baris N dinilai berdasarkan hasil keluaran di <strong>Baris N+1 (dibawahnya)</strong>.<br>
+        <strong>JP:</strong> Minimal 2 digit BBFS masuk di posisi Kepala & Ekor baris berikutnya.<br>
+        <strong>ZONK:</strong> Hanya 1 digit (atau 0) yang masuk.<br>
+        <strong>KECUALI TWIN:</strong> Jika hasil baris berikutnya Twin (Kepala = Ekor) dan digit tersebut ada di BBFS, otomatis dihitung <strong>JP</strong> (karena mengisi 2 posisi sekaligus).
+    </div>
+
+    <div class="data-area">
+        <h4>📊 Input Data Hasil 4D (max 30 baris)</h4>
+        <textarea id="historyData" placeholder="Contoh:&#10;1234&#10;5678&#10;9012&#10;... (max 30 baris)"></textarea>
+        <button class="btn-load" onclick="loadHistoryData()">📥 Muat Data & Scan Rumus</button>
+        <div class="info">Data akan digunakan untuk mencari rumus terbaik dan mengisi tabel evaluasi.</div>
+    </div>
+
+    <div class="scan-buttons">
+        <button class="btn-scan" onclick="scanMode('cepat')">⚡ Scan Cepat (6 Rumus)</button>
+        <button class="btn-scan" onclick="scanMode('lengkap')">🔍 Scan Lengkap (26 Rumus)</button>
+    </div>
+
+    <div id="scanResults">
+        <button class="close-scan" onclick="document.getElementById('scanResults').style.display='none'">✕</button>
+        <h3>🏆 Ranking Rumus Terbaik</h3>
+        <div id="rankingList"></div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>NO</th>
+                    <th>NAMA</th>
+                    <th>PASARAN</th>
+                    <th>HASIL 4D</th>
+                    <th>RUMUS</th>
+                    <th>BBFS 8D</th>
+                    <th>K</th>
+                    <th>E</th>
+                    <th>STATUS (vs N+1)</th>
+                </tr>
+            </thead>
+            <tbody id="mainBody">
+                <!-- Generate 10 Row -->
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="btn-container">
+        <button class="btn-eval" onclick="evaluateAll()">⚡ Evaluasi Semua</button>
+        <button class="btn-copy" onclick="copyResults()">📋 Salin Hasil</button>
+        <button class="btn-clear" onclick="clearAll()">🗑️ Clear Semua</button>
+    </div>
+</div>
+
+<div class="toast" id="toast">Hasil disalin ke clipboard!</div>
+
+<script>
+    const LOCKED_PASARAN = "Hk Pools";
+    const MAX_ROWS = 10;
+
+    const dataCT = {
+        0: "01234569", 1: "12345670", 2: "23456781", 3: "34567892", 4: "45678903",
+        5: "56789014", 6: "67890125", 7: "78901236", 8: "89012347", 9: "90123458"
+    };
+
+    const FORMULA_LIST = {
+        cepat: [
+            { label: "As+Kop", func: (a,c,k,e) => (a + c) % 10 },
+            { label: "As+Kepala", func: (a,c,k,e) => (a + k) % 10 },
+            { label: "As+Ekor", func: (a,c,k,e) => (a + e) % 10 },
+            { label: "Kop+Kepala", func: (a,c,k,e) => (c + k) % 10 },
+            { label: "Kop+Ekor", func: (a,c,k,e) => (c + e) % 10 },
+            { label: "Kepala+Ekor", func: (a,c,k,e) => (k + e) % 10 }
+        ],
+        lengkap: [
+            { label: "As+Kop", func: (a,c,k,e) => (a + c) % 10 },
+            { label: "As+Kepala", func: (a,c,k,e) => (a + k) % 10 },
+            { label: "As+Ekor", func: (a,c,k,e) => (a + e) % 10 },
+            { label: "Kop+Kepala", func: (a,c,k,e) => (c + k) % 10 },
+            { label: "Kop+Ekor", func: (a,c,k,e) => (c + e) % 10 },
+            { label: "Kepala+Ekor", func: (a,c,k,e) => (k + e) % 10 },
+            { label: "|As-Kop|", func: (a,c,k,e) => Math.abs(a - c) % 10 },
+            { label: "|As-Kepala|", func: (a,c,k,e) => Math.abs(a - k) % 10 },
+            { label: "|As-Ekor|", func: (a,c,k,e) => Math.abs(a - e) % 10 },
+            { label: "|Kop-Kepala|", func: (a,c,k,e) => Math.abs(c - k) % 10 },
+            { label: "|Kop-Ekor|", func: (a,c,k,e) => Math.abs(c - e) % 10 },
+            { label: "|Kepala-Ekor|", func: (a,c,k,e) => Math.abs(k - e) % 10 },
+            { label: "As*Kop", func: (a,c,k,e) => (a * c) % 10 },
+            { label: "As*Kepala", func: (a,c,k,e) => (a * k) % 10 },
+            { label: "As*Ekor", func: (a,c,k,e) => (a * e) % 10 },
+            { label: "Kop*Kepala", func: (a,c,k,e) => (c * k) % 10 },
+            { label: "Kop*Ekor", func: (a,c,k,e) => (c * e) % 10 },
+            { label: "Kepala*Ekor", func: (a,c,k,e) => (k * e) % 10 },
+            { label: "As/Kop", func: (a,c,k,e) => c === 0 ? 0 : Math.floor(a / c) % 10 },
+            { label: "As/Kepala", func: (a,c,k,e) => k === 0 ? 0 : Math.floor(a / k) % 10 },
+            { label: "As/Ekor", func: (a,c,k,e) => e === 0 ? 0 : Math.floor(a / e) % 10 },
+            { label: "Kop/Kepala", func: (a,c,k,e) => k === 0 ? 0 : Math.floor(c / k) % 10 },
+            { label: "Kop/Ekor", func: (a,c,k,e) => e === 0 ? 0 : Math.floor(c / e) % 10 },
+            { label: "Kepala/Ekor", func: (a,c,k,e) => e === 0 ? 0 : Math.floor(k / e) % 10 },
+            { label: "(As+Kop+Kepala+Ekor)", func: (a,c,k,e) => (a + c + k + e) % 10 },
+            { label: "(As*Kop + Kepala*Ekor)", func: (a,c,k,e) => ((a * c) + (k * e)) % 10 }
+        ]
+    };
+
+    let historyDataCache = [];
+
+    // Generate Table Rows
+    const container = document.getElementById('mainBody');
+    let rumusOptionsHTML = '';
+    FORMULA_LIST.lengkap.forEach(f => {
+        rumusOptionsHTML += `<option value="${f.label}">${f.label}</option>`;
+    });
+
+    for (let i = 1; i <= MAX_ROWS; i++) {
+        container.innerHTML += `
+            <tr>
+                <td style="color:#888; font-weight:bold;">${i}</td>
+                <td><input type="text" id="nama${i}" class="nama-input" placeholder="Prediksi ${i}" oninput="saveData()"></td>
+                <td><input type="text" id="pasaran${i}" class="pasaran-input" value="${LOCKED_PASARAN}" readonly></td>
+                <td><input type="text" id="hasil${i}" class="hasil-input" maxlength="4" placeholder="0000" oninput="validateAndAutoFill(${i})"></td>
+                <td>
+                    <select id="rumus${i}" class="rumus-select" onchange="generateBBFS(${i}); saveData();">
+                        ${rumusOptionsHTML}
+                    </select>
+                </td>
+                <td><input type="text" id="bbfs${i}" class="bbfs-input" maxlength="7" placeholder="12345678" oninput="validateBBFS(this); evaluateRow(${i}); saveData();"></td>
+                <td><input type="text" id="k${i}" class="ke-input" maxlength="1" readonly></td>
+                <td><input type="text" id="e${i}" class="ke-input" maxlength="1" readonly></td>
+                <td id="stat${i}"><span class="stat-pending">-</span></td>
+            </tr>
+        `;
+    }
+
+    window.onload = function() {
+        loadData();
+    };
+
+    function loadHistoryData() {
+        const text = document.getElementById('historyData').value;
+        const lines = text.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+        const parsed = [];
+        for (let line of lines) {
+            const digits = line.replace(/[^0-9]/g, '');
+            if (digits.length === 4) {
+                parsed.push({
+                    a: parseInt(digits[0]),
+                    c: parseInt(digits[1]),
+                    k: parseInt(digits[2]),
+                    e: parseInt(digits[3])
+                });
+            }
+        }
+        if (parsed.length < 2) {
+            showToast('Minimal 2 data 4D valid!');
+            return;
+        }
+        if (parsed.length > 30) {
+            showToast('Maksimal 30 data, hanya 30 pertama yang dipakai.');
+            parsed.length = 30;
+        }
+        historyDataCache = parsed;
+        showToast(`Berhasil memuat ${parsed.length} data. Jalankan scan!`);
+    }
+
+    function scanMode(mode) {
+        const data = historyDataCache;
+        if (data.length < 2) {
+            showToast('Isi data hasil dulu (min 2) atau klik "Muat Data & Scan Rumus"');
+            return;
+        }
+
+        const resultsDiv = document.getElementById('scanResults');
+        const rankingList = document.getElementById('rankingList');
+
+        let formulas = mode === 'cepat' ? FORMULA_LIST.cepat : FORMULA_LIST.lengkap;
+        const ranking = [];
+
+        formulas.forEach(formula => {
+            let totalJP = 0;
+            for (let i = 0; i < data.length - 1; i++) {
+                const cur = data[i];
+                const next = data[i+1];
+                const ix = formula.func(cur.a, cur.c, cur.k, cur.e);
+                const ct = dataCT[ix] || "-------";
+                if (ct === "-------") continue;
+                
+                const kepalaNext = next.k.toString();
+                const ekorNext = next.e.toString();
+                
+                // Cek JP: minimal 2 digit masuk, atau twin
+                const matchK = ct.includes(kepalaNext);
+                const matchE = ct.includes(ekorNext);
+                let hitCount = (matchK ? 1 : 0) + (matchE ? 1 : 0);
+                if (kepalaNext === ekorNext && matchK) hitCount = 2; // Twin rule
+
+                if (hitCount >= 2) {
+                    totalJP++;
+                }
+            }
+            ranking.push({ label: formula.label, jp: totalJP });
+        });
+
+        ranking.sort((a, b) => b.jp - a.jp);
+
+        let html = '';
+        if (ranking.length === 0 || ranking[0].jp === 0) {
+            html = '<p style="text-align:center;color:#888;">Tidak ada JP ditemukan dengan data ini.</p>';
+        } else {
+            const maxJP = data.length - 1;
+            ranking.forEach((item, index) => {
+                const isBest = index === 0 && item.jp > 0;
+                const cls = isBest ? 'ranking-item best' : 'ranking-item';
+                const pct = ((item.jp / maxJP) * 100).toFixed(1);
+                html += `<div class="${cls}">
+                    <span class="rank">#${index+1}</span>
+                    <span class="formula">${item.label}</span>
+                    <span class="jp-count">JP ${item.jp}/${maxJP} (${pct}%)</span>
+                    <button class="btn-apply" onclick="applyRumus('${item.label}')">TERAPKAN</button>
+                </div>`;
+            });
+        }
+        rankingList.innerHTML = html;
+        resultsDiv.style.display = 'block';
+        showToast(`Scan ${mode === 'cepat' ? 'Cepat (6)' : 'Lengkap (26)'} selesai!`);
+    }
+
+    function applyRumus(rumusLabel) {
+        for (let i = 1; i <= MAX_ROWS; i++) {
+            const select = document.getElementById(`rumus${i}`);
+            if (select) {
+                select.value = rumusLabel;
+                generateBBFS(i);
+            }
+        }
+        evaluateAll();
+        saveData();
+        showToast(`Rumus "${rumusLabel}" diterapkan ke semua baris!`);
+    }
+
+    function validateAndAutoFill(row) {
+        const input = document.getElementById(`hasil${row}`);
+        input.value = input.value.replace(/[^0-9]/g, '');
+        
+        if (input.value.length === 4) {
+            document.getElementById(`k${row}`).value = input.value[2];
+            document.getElementById(`e${row}`).value = input.value[3];
+            generateBBFS(row);
+            
+            // PENTING: Evaluasi baris sebelumnya (row - 1) karena statusnya bergantung pada hasil baris ini (row)
+            if (row > 1) {
+                evaluateRow(row - 1);
+            }
+        } else {
+            document.getElementById(`k${row}`).value = '';
+            document.getElementById(`e${row}`).value = '';
+            document.getElementById(`stat${row}`).innerHTML = '<span class="stat-pending">-</span>';
+            if (row > 1) {
+                evaluateRow(row - 1); // Reset evaluasi baris sebelumnya jika result dihapus
+            }
+        }
+        saveData();
+    }
+
+    function validateBBFS(input) {
+        input.value = input.value.replace(/[^0-9]/g, '').slice(0, 7);
+    }
+
+    function generateBBFS(row) {
+        const hasil = document.getElementById(`hasil${row}`).value;
+        const rumusType = document.getElementById(`rumus${row}`).value;
+        
+        if (hasil.length !== 4) return;
+        
+        const a = parseInt(hasil[0]);
+        const c = parseInt(hasil[1]);
+        const k = parseInt(hasil[2]);
+        const e = parseInt(hasil[3]);
+        
+        let formulaObj = FORMULA_LIST.lengkap.find(f => f.label === rumusType);
+        let rumusLastDigit = 0;
+        
+        if (formulaObj) {
+            rumusLastDigit = formulaObj.func(a, c, k, e);
+        }
+        
+        let bbfs = dataCT[rumusLastDigit] || "-------";
+        document.getElementById(`bbfs${row}`).value = bbfs;
+        evaluateRow(row);
+    }
+
+    function evaluateRow(row) {
+        const bbfs = document.getElementById(`bbfs${row}`).value;
+        const nextRow = row + 1;
+        const statTd = document.getElementById(`stat${row}`);
+
+        // Evaluasi hanya valid jika BBFS 8 digit dan ada baris berikutnya (N+1)
+        if (bbfs.length === 8 && nextRow <= MAX_ROWS) {
+            const kepala = document.getElementById(`k${nextRow}`).value;
+            const ekor = document.getElementById(`e${nextRow}`).value;
+
+            if (kepala.length === 1 && ekor.length === 1) {
+                const matchK = bbfs.includes(kepala);
+                const matchE = bbfs.includes(ekor);
+                
+                let hitCount = 0;
+                if (matchK) hitCount++;
+                if (matchE) hitCount++;
+                
+                const isTwin = (kepala === ekor);
+
+                // Jika Twin dan digit ada di BBFS, otomatis mengisi 2 posisi (K dan E)
+                if (isTwin && matchK) {
+                    hitCount = 2;
+                }
+
+                let statusText = "ZONK";
+                let statusClass = "status-zonk";
+
+                if (hitCount >= 2) {
+                    statusText = isTwin ? "🔥 JP (Twin)" : "🔥 JP";
+                    statusClass = "status-jp";
+                }
+
+                statTd.innerHTML = `<span class="${statusClass}">${statusText}</span>`;
+            } else {
+                statTd.innerHTML = '<span class="stat-pending">Menunggu Result</span>';
+            }
+        } else if (bbfs.length === 7 && nextRow > MAX_ROWS) {
+            statTd.innerHTML = '<span class="stat-pending">Baris Terakhir</span>';
+        } else {
+            statTd.innerHTML = '<span class="stat-pending">-</span>';
+        }
+    }
+
+    function evaluateAll() {
+        let jpCount = 0;
+        for (let i = 1; i <= MAX_ROWS; i++) {
+            evaluateRow(i);
+            const statText = document.getElementById(`stat${i}`).innerText;
+            if (statText.includes("JP")) jpCount++;
+        }
+        showToast(`Evaluasi selesai! Total: ${jpCount} JP`);
+    }
+
+    function copyResults() {
+        let textToCopy = `🎯 *EVALUASI BBFS 7D - ${LOCKED_PASARAN}*\n\n`;
+        let hasData = false;
+        let jpCount = 0;
+        
+        for (let i = 1; i <= MAX_ROWS; i++) {
+            const nama = document.getElementById(`nama${i}`).value || `Baris ${i}`;
+            const hasil = document.getElementById(`hasil${i}`).value;
+            const rumus = document.getElementById(`rumus${i}`).value;
+            const bbfs = document.getElementById(`bbfs${i}`).value;
+            const k = document.getElementById(`k${i}`).value;
+            const e = document.getElementById(`e${i}`).value;
+            const stat = document.getElementById(`stat${i}`).innerText;
+            
+            if (hasil.length === 4 && bbfs.length === 7) {
+                hasData = true;
+                if (stat.includes("JP")) jpCount++;
+                textToCopy += `📊 *${nama}* (vs Baris ${i+1})\n`;
+                textToCopy += `   Hasil : ${hasil} (K:${k} E:${e})\n`;
+                textToCopy += `   Rumus : ${rumus}\n`;
+                textToCopy += `   BBFS  : ${bbfs}\n`;
+                textToCopy += `   Status: ${stat}\n\n`;
+            }
+        }
+        
+        if (!hasData) {
+            textToCopy += "Belum ada data lengkap untuk disalin.\n";
+        } else {
+            textToCopy += `🏆 *RINGKASAN*: ${jpCount} JP dari data yang dievaluasi.`;
+        }
+        
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(textToCopy).then(() => showToast("Hasil disalin!")).catch(() => fallbackCopy(textToCopy));
+        } else {
+            fallbackCopy(textToCopy);
+        }
+    }
+
+    function fallbackCopy(text) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showToast("Hasil disalin!");
+        } catch (err) {
+            alert('Gagal menyalin.');
+        }
+        document.body.removeChild(textArea);
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.innerText = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    function saveData() {
+        const data = { rows: [] };
+        for (let i = 1; i <= MAX_ROWS; i++) {
+            data.rows.push({
+                nama: document.getElementById(`nama${i}`).value,
+                hasil: document.getElementById(`hasil${i}`).value,
+                rumus: document.getElementById(`rumus${i}`).value,
+                bbfs: document.getElementById(`bbfs${i}`).value
+            });
+        }
+        localStorage.setItem('bbfs8d_scanner_data_v2', JSON.stringify(data));
+    }
+
+    function loadData() {
+        const saved = localStorage.getItem('bbfs8d_scanner_data_v2');
+        if (saved) {
+            const data = JSON.parse(saved);
+            if (data.rows) {
+                data.rows.forEach((row, index) => {
+                    const i = index + 1;
+                    if (i <= MAX_ROWS) {
+                        document.getElementById(`nama${i}`).value = row.nama || '';
+                        document.getElementById(`hasil${i}`).value = row.hasil || '';
+                        document.getElementById(`rumus${i}`).value = row.rumus || 'As+Kop';
+                        document.getElementById(`bbfs${i}`).value = row.bbfs || '';
+                        
+                        if (row.hasil && row.hasil.length === 4) {
+                            document.getElementById(`k${i}`).value = row.hasil[2];
+                            document.getElementById(`e${i}`).value = row.hasil[3];
+                        }
+                    }
+                });
+            }
+            // Evaluasi semua setelah load untuk memastikan logika N -> N+1 berjalan
+            evaluateAll();
+        }
+    }
+
+    function clearAll() {
+        if (confirm('Yakin ingin menghapus semua data?')) {
+            localStorage.removeItem('bbfs8d_scanner_data_v2');
+            for (let i = 1; i <= MAX_ROWS; i++) {
+                document.getElementById(`nama${i}`).value = '';
+                document.getElementById(`hasil${i}`).value = '';
+                document.getElementById(`rumus${i}`).value = 'As+Kop';
+                document.getElementById(`bbfs${i}`).value = '';
+                document.getElementById(`k${i}`).value = '';
+                document.getElementById(`e${i}`).value = '';
+                document.getElementById(`stat${i}`).innerHTML = '<span class="stat-pending">-</span>';
+            }
+            document.getElementById('historyData').value = '';
+            document.getElementById('scanResults').style.display = 'none';
+            showToast("Data dibersihkan! 🔒 Hk Pools");
+        }
+    }
+
+    setInterval(saveData, 5000);
+</script>
+
+</body>
+</html>
